@@ -6,6 +6,14 @@ Autor: Prof. Dr.-Ing. Thomas Rinder, HAW Kiel, thomas.rinder@haw-kiel.de
 
 Quelltext: https://github.com/thomasrinder-debug/haw-c
 
+## So sieht es aus
+
+[![Kurzanleitung als Video: Ausführen, Fehler, Debuggen, mehrere Dateien, Speicherprüfung, Aufgabe prüfen, Übersetzungsschritte](docs/video/anleitung.gif)](https://github.com/thomasrinder-debug/haw-c/releases/latest/download/anleitung.mp4)
+
+**[Video in voller Qualität ansehen (MP4, 1 Minute 40, ohne Ton)](https://github.com/thomasrinder-debug/haw-c/releases/latest/download/anleitung.mp4)**
+
+Das Video zeigt VS Code in der englischen Standardoberfläche. Die Knöpfe und Meldungen der Extension sind deutsch.
+
 ## Installation
 
 Sie brauchen Windows 10 oder 11 (64 Bit), Internet für die Installation und rund 1 GB freien Speicherplatz. Administratorrechte sind nicht nötig. Auf verwalteten Rechnern siehe „Probleme“ unten.
