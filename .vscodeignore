@@ -1,0 +1,8 @@
+**
+!out/extension.js
+!kit/*.7z.exe
+!starter/**
+!vorlagen/**
+!package.json
+!README.md
+!LICENSE.txt

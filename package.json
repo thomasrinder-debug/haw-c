@@ -1,0 +1,91 @@
+{
+  "name": "haw-c",
+  "displayName": "HAW Kiel C",
+  "description": "C-Programme in VS Code übersetzen, starten und debuggen, ohne etwas einzurichten und ohne Administratorrechte.",
+  "version": "0.2.3",
+  "repository": { "type": "git", "url": "https://github.com/thomasrinder-debug/haw-c" },
+  "publisher": "thomasrinder",
+  "author": { "name": "Prof. Dr.-Ing. Thomas Rinder, HAW Kiel", "email": "thomas.rinder@haw-kiel.de" },
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "engines": { "vscode": "^1.90.0" },
+  "categories": ["Programming Languages", "Debuggers", "Education"],
+  "main": "./out/extension.js",
+  "extensionDependencies": ["ms-vscode.cpptools"],
+  "activationEvents": ["onLanguage:c", "onLanguage:makefile", "onDebugResolve:hawc"],
+  "contributes": {
+    "commands": [
+      { "command": "hawC.run", "title": "Ausführen", "category": "HAW Kiel C", "icon": "$(play)" },
+      { "command": "hawC.debug", "title": "Debuggen", "category": "HAW Kiel C", "icon": "$(debug-alt)" },
+      { "command": "hawC.build", "title": "Nur übersetzen", "category": "HAW Kiel C" },
+      { "command": "hawC.check", "title": "Aufgabe prüfen", "category": "HAW Kiel C", "icon": "$(beaker)" },
+      { "command": "hawC.steps", "title": "Übersetzungsschritte anzeigen", "category": "HAW Kiel C" },
+      { "command": "hawC.runMemory", "title": "Makefile-Projekt mit Speicherprüfung neu bauen und starten", "category": "HAW Kiel C" },
+      { "command": "hawC.menu", "title": "Menü", "category": "HAW Kiel C" },
+      { "command": "hawC.makeTarget", "title": "Make-Ziel ausführen", "category": "HAW Kiel C" },
+      { "command": "hawC.setArgs", "title": "Programmargumente eintragen", "category": "HAW Kiel C" },
+      { "command": "hawC.toggleFolder", "title": "Nur aktive Datei übersetzen ein/aus", "category": "HAW Kiel C" },
+      { "command": "hawC.newProject", "title": "Neues Projekt", "category": "HAW Kiel C" },
+      { "command": "hawC.terminal", "title": "Terminal öffnen", "category": "HAW Kiel C" },
+      { "command": "hawC.diagnose", "title": "Diagnose kopieren", "category": "HAW Kiel C" },
+      { "command": "hawC.reset", "title": "Umgebung neu aufsetzen", "category": "HAW Kiel C" }
+    ],
+    "menus": {
+      "editor/title": [
+        { "command": "hawC.run", "when": "resourceLangId == c || resourceLangId == makefile || resourceExtname == .h", "group": "navigation@1" },
+        { "command": "hawC.debug", "when": "resourceLangId == c || resourceLangId == makefile || resourceExtname == .h", "group": "navigation@2" },
+        { "command": "hawC.check", "when": "hawC.hatAufgabe", "group": "navigation@3" }
+      ]
+    },
+    "keybindings": [
+      { "command": "hawC.run", "key": "ctrl+f5", "when": "(editorLangId == c || resourceExtname == .h) && !inDebugMode" },
+      { "command": "hawC.debug", "key": "f5", "when": "(editorLangId == c || resourceExtname == .h) && !inDebugMode" }
+    ],
+    "debuggers": [
+      { "type": "hawc", "label": "HAW Kiel C", "languages": ["c"] }
+    ],
+    "taskDefinitions": [
+      { "type": "hawc", "required": ["label"], "properties": { "label": { "type": "string" } } }
+    ],
+    "configuration": {
+      "title": "HAW Kiel C",
+      "properties": {
+        "hawC.speicherpruefung": {
+          "type": "boolean",
+          "default": true,
+          "scope": "resource",
+          "description": "Ohne Makefile die Speicherprüfung einbinden: Lecks, doppeltes free, Schreiben über Blockgrenzen und nach free."
+        },
+        "hawC.nurAktiveDatei": {
+          "type": "boolean",
+          "default": false,
+          "scope": "resource",
+          "description": "Ohne Makefile nur die aktive Datei übersetzen statt aller zusammengehörigen .c-Dateien."
+        }
+      }
+    },
+    "configurationDefaults": {
+      "C_Cpp.default.configurationProvider": "thomasrinder.haw-c",
+      "C_Cpp.debugShortcut": false,
+      "[c]": { "files.encoding": "utf8" },
+      "[makefile]": { "editor.insertSpaces": false, "editor.tabSize": 8, "files.eol": "\n" }
+    }
+  },
+  "scripts": {
+    "kit": "node scripts/kit-holen.js",
+    "compile": "tsc --noEmit && esbuild src/extension.ts --bundle --platform=node --external:vscode --outfile=out/extension.js --sourcemap",
+    "paket": "npm run kit && npm run compile && vsce package --no-dependencies --target win32-x64 --allow-missing-repository",
+    "test": "npm run kit && npm run compile && tsc -p test/tsconfig.json && node test/out/runTest.js"
+  },
+  "dependencies": {
+    "vscode-cpptools": "^7.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/vscode": "1.90",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^4.1.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}

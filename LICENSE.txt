@@ -1,0 +1,98 @@
+HAW Kiel C: Lizenz für die akademische Nutzung
+
+Copyright (c) 2026 Prof. Dr.-Ing. Thomas Rinder, HAW Kiel
+Kontakt: thomas.rinder@haw-kiel.de
+Quelltext: https://github.com/thomasrinder-debug/haw-c
+
+Diese Lizenz gilt für die VS-Code-Extension „HAW Kiel C“ einschließlich Quelltext,
+Vorlagen und Dokumentation (die „Software“). Sie ist keine Open-Source-Lizenz.
+
+1. Erlaubte Nutzung
+
+Die Software darf unentgeltlich für akademische Zwecke genutzt, vervielfältigt,
+verändert und weitergegeben werden. Akademische Zwecke sind:
+
+  a) Studium, Lehre und Prüfungen an Hochschulen sowie an anderen Bildungs-
+     einrichtungen,
+  b) das persönliche Lernen von Studierenden, Lehrenden und Schülerinnen und
+     Schülern,
+  c) nicht kommerzielle Forschung an Hochschulen und Forschungseinrichtungen.
+
+2. Bedingungen
+
+  a) Jede Kopie und jede veränderte Fassung muss diesen Lizenztext vollständig
+     enthalten und darf nur unter dieser Lizenz weitergegeben werden.
+  b) Veränderte Fassungen müssen als verändert gekennzeichnet sein und dürfen
+     nicht den Eindruck erwecken, vom Urheber oder von der HAW Kiel zu stammen.
+
+3. Nicht erlaubte Nutzung
+
+Jede andere Nutzung bedarf der vorherigen schriftlichen Zustimmung des Urhebers.
+Nicht erlaubt sind insbesondere:
+
+  a) der Einsatz in Unternehmen oder sonst zu Erwerbszwecken,
+  b) der Einsatz in kostenpflichtigen Kursen oder Schulungen außerhalb einer
+     Bildungseinrichtung im Sinne von Abschnitt 1,
+  c) der Verkauf der Software oder ihre Weitergabe gegen Entgelt,
+  d) das Anbieten der Software als kostenpflichtiger Dienst.
+
+4. Eigene Programme
+
+Diese Lizenz erfasst nicht die Programme, die Nutzerinnen und Nutzer mit der
+Software schreiben und übersetzen. Die Rechte daran bleiben bei ihnen. Diese
+Programme können Teile der GCC- und der Mingw-w64-Laufzeit enthalten, siehe
+Abschnitt 7.
+
+5. Hinweis zur Entstehung
+
+Die Software wurde mit Unterstützung der KI Claude Opus 5.5 von Anthropic erstellt
+und vom Urheber angeleitet und geprüft. Die Software wurde getestet, sie kann aber
+trotzdem Fehler enthalten.
+
+6. Haftung und Gewährleistung
+
+Die Software wird unentgeltlich und ohne Gewähr für Fehlerfreiheit oder Eignung
+für einen bestimmten Zweck überlassen. Die Haftung ist auf Vorsatz und grobe
+Fahrlässigkeit beschränkt. Unberührt bleibt die Haftung, die gesetzlich nicht
+ausgeschlossen werden kann, insbesondere bei Verletzung von Leben, Körper und
+Gesundheit und nach dem Produkthaftungsgesetz.
+
+7. Software anderer
+
+Für folgende Bestandteile gelten allein die Lizenzen ihrer Urheber. Abschnitt 1
+und Abschnitt 3 schränken ihre Nutzung nicht ein.
+
+  w64devkit 2.11.0 von Christopher Wellons
+    https://github.com/skeeto/w64devkit
+    Unlicense. Das Kit enthält Werkzeuge mit eigenen Lizenzen, unter anderem GCC,
+    GDB und GNU Make. Für die Laufzeit in erzeugten Programmen siehe im Kit die
+    Datei COPYING.MinGW-w64-runtime.txt.
+
+    Quelltext aller Werkzeuge des Kits in genau dieser Fassung:
+    https://github.com/skeeto/w64devkit/releases/download/v2.11.0/source.tar
+    SHA-256 50ee43ca02b9ca49e0e16da7eaf9701c9a396a019ebb2416a93d16769d53e5ff
+
+    Einzelne Quellen der wichtigsten Werkzeuge:
+    GCC 16.2.0        https://ftp.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz
+    GNU Binutils 2.47 https://ftp.gnu.org/gnu/binutils/binutils-2.47.tar.xz
+    GDB 18.1          https://ftp.gnu.org/gnu/gdb/gdb-18.1.tar.xz
+    GNU Make 4.4.1    https://ftp.gnu.org/gnu/make/make-4.4.1.tar.gz
+    Mingw-w64 14.0.0  https://downloads.sourceforge.net/project/mingw-w64/mingw-w64/mingw-w64-release/mingw-w64-v14.0.0.tar.bz2
+    busybox-w32       https://github.com/rmyorston/busybox-w32/archive/refs/tags/FRP-6354-g5f09fb446.tar.gz
+
+  Microsoft C/C++ für Visual Studio Code (ms-vscode.cpptools)
+    https://github.com/microsoft/vscode-cpptools
+    Nicht im Paket enthalten, wird von VS Code getrennt installiert. Es gelten die
+    Lizenzbedingungen von Microsoft.
+
+8. Ende der Lizenz
+
+Wer gegen diese Bedingungen verstößt, verliert das Nutzungsrecht. Bereits
+weitergegebene Kopien, deren Empfänger die Bedingungen einhalten, bleiben davon
+unberührt.
+
+9. Anwendbares Recht
+
+Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des
+UN-Kaufrechts. Zwingende Verbraucherschutzvorschriften bleiben unberührt. Ist eine
+Bestimmung unwirksam, bleiben die übrigen wirksam.

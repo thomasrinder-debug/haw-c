@@ -1,0 +1,10 @@
+{
+  "name": "Summe zweier Zahlen",
+  "timeout_sec": 2,
+  "vergleich": "letzteZahl",
+  "tests": [
+    { "name": "Positive Zahlen", "input": "3\n4\n", "erwartet": "7" },
+    { "name": "Mit negativer Zahl", "input": "5\n-8\n", "erwartet": "-3" },
+    { "name": "Null", "input": "0\n0\n", "erwartet": "0" }
+  ]
+}
