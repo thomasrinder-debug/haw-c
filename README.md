@@ -10,9 +10,9 @@ Quelltext: https://github.com/thomasrinder-debug/haw-c
 
 [![Kurzanleitung als Video: Ausführen, Fehler, Debuggen, mehrere Dateien, Speicherprüfung, Aufgabe prüfen, Übersetzungsschritte](docs/video/anleitung.gif)](https://github.com/thomasrinder-debug/haw-c/releases/latest/download/anleitung.mp4)
 
-**[Video in voller Qualität ansehen (MP4, 1 Minute 40, ohne Ton)](https://github.com/thomasrinder-debug/haw-c/releases/latest/download/anleitung.mp4)**
+**[Video mit Ton und Erklärung ansehen (MP4, 3 Minuten)](https://github.com/thomasrinder-debug/haw-c/releases/latest/download/anleitung.mp4)**
 
-Das Video zeigt VS Code in der englischen Standardoberfläche. Die Knöpfe und Meldungen der Extension sind deutsch.
+Das bewegte Bild oben läuft ohne Ton, die Erklärung gibt es im Video. Es zeigt VS Code in der englischen Standardoberfläche, die Knöpfe und Meldungen der Extension sind deutsch. Die Stimme ist computererzeugt (Piper mit der Stimme Thorsten-Voice, Datensatz unter CC0).
 
 ## Installation
 

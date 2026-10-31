@@ -22,6 +22,66 @@ const only = process.argv.find((arg) => arg.startsWith('nur='))?.slice(4).split(
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Stimme: Piper mit „thorsten-high“ (offline, Datensatz CC0). HAW_PIPER zeigt auf einen
+// Ordner mit venv (pip install piper-tts) und dem Modell de.onnx samt de.onnx.json.
+const PIPER = process.env.HAW_PIPER;
+
+// Je Einsatz: Untertitel und gesprochener Text. Die Stimme trifft englische Fachwörter
+// schlecht. Gesprochen wird deshalb „Fehlersuche“ und „Kopfdatei“, und Abkürzungen
+// stehen nach Aussprache („V S Code“, „Ze“). Die Untertitel nennen die Fachwörter.
+const TEXT = {
+  titel: ['HAW Kiel C: C-Programme in VS Code, ohne Einrichtung', 'Mit der Erweiterung H A W Kiel Ze schreiben und starten Sie Ze-Programme in V S Code. Compiler und Werkzeuge zur Fehlersuche sind schon dabei, Sie müssen nichts einrichten.'],
+  oeffnen: ['Eine .c-Datei öffnen: Oben rechts erscheinen die Knöpfe', 'Öffnen Sie eine Datei mit der Endung Punkt Ze. Oben rechts im Editor erscheinen dann die Knöpfe zum Ausführen und für die Fehlersuche.'],
+  klick: ['Ein Klick auf Ausführen', 'Ein Klick auf Ausführen genügt.'],
+  terminal: ['Speichern, übersetzen, starten: Die Ausgabe steht im Terminal', 'Die Datei wird gespeichert und übersetzt, dann startet das Programm. Seine Ausgabe steht unten im Terminal, hier die Summe zehn.'],
+  fehler: ['Ein Fehler im Code: Das Semikolon fehlt', 'Was passiert bei einem Fehler? Dazu lösche ich das Semikolon am Ende dieser Zeile und starte erneut.'],
+  problem: ['Der Fehler steht im Code und im Problemfenster, mit deutschem Hinweis', 'Das Programm startet jetzt nicht. Die Stelle ist im Code markiert. Das Problemfenster nennt die englische Meldung des Compilers und darunter einen deutschen Hinweis.'],
+  haltepunkt: ['Haltepunkt setzen (F9), dann Debuggen (F5)', 'Für die Fehlersuche setze ich mit der Taste F neun einen Haltepunkt und drücke dann F fünf.'],
+  haelt: ['Das Programm hält an dieser Zeile an', 'Das Programm hält an dieser Zeile an. Ein- und Ausgaben laufen dabei in einem eigenen Fenster.'],
+  variablen: ['Links stehen die Variablen mit ihren Werten', 'Links sehen Sie die Variablen mit ihren aktuellen Werten.'],
+  weiter: ['Weiter mit F5: Die Werte ändern sich', 'Mit F fünf läuft das Programm bis zum nächsten Halt, und die Werte ändern sich.'],
+  mehrere: ['Mehrere .c-Dateien und eigene Header gehen ohne Makefile', 'Programme aus mehreren Dateien laufen ohne jede Einstellung. Hier gehören zwei Quelldateien und eine eigene Kopfdatei zusammen.'],
+  gemeinsam: ['main.c und rechnen.c werden gemeinsam übersetzt', 'Die Erweiterung erkennt das selbst und übersetzt beide Dateien gemeinsam.'],
+  anzahl: ['Unten links steht, wie viele Dateien zum Programm gehören', 'Unten links steht, wie viele Dateien zum Programm gehören. Bringt das Projekt eine eigene Bauanleitung mit, wird sie benutzt.'],
+  speicher: ['Die Speicherprüfung läuft immer mit', 'Die Speicherprüfung läuft immer mit. In diesem Programm wird Speicher angefordert, aber nie freigegeben.'],
+  leck: ['Am Ende meldet sie das Speicherleck mit der Zeile', 'Am Programmende meldet sie das Speicherleck mit der genauen Zeile, im Terminal und im Problemfenster.'],
+  aufgabe: ['Selbsttest: Eine aufgabe.json enthält die Testfälle', 'Für Übungsaufgaben können Sie Ihre Lösung selbst testen. Die Testfälle stehen in einer Datei im Projektordner, die Ihre Lehrkraft vorgibt.'],
+  pruefen: ['Aufgabe prüfen zeigt, welche Tests bestehen …', 'Der Knopf Aufgabe prüfen startet alle Tests und zeigt, welche bestehen.'],
+  abweichung: ['… und bei Fehlern Eingabe, Erwartung und tatsächliche Ausgabe', 'Hier ist einer falsch. Sie sehen die Eingabe, das erwartete Ergebnis und was Ihr Programm tatsächlich ausgegeben hat.'],
+  menue: ['Das Menü HAW Kiel C steht unten links', 'Weitere Befehle stehen im Menü H A W Kiel Ze, unten links in der Statusleiste.'],
+  schritte: ['Übersetzungsschritte zeigen, was gcc einzeln tut', 'Der Befehl Übersetzungsschritte zeigt, was der Compiler im Einzelnen tut.'],
+  stufen: ['Präprozessor, Compiler, Assembler und Linker, mit den Zwischendateien', 'Sie sehen Präprozessor, Compiler, Assembler und zuletzt den Linker, jeweils mit dem Befehl und den Zwischendateien.'],
+  ende: ['Installation und Hilfe: github.com/thomasrinder-debug/haw-c', 'Die Installation und Hilfe bei Problemen finden Sie auf der Projektseite bei Git Hab. Viel Erfolg beim Programmieren!'],
+};
+
+const speech = new Map();
+const cues = [];
+
+/** Erzeugt alle Sätze vorab, damit das Sprechen die Aufnahme nicht aufhält. */
+function synthesize() {
+  if (!PIPER) {
+    throw new Error('HAW_PIPER ist nicht gesetzt.');
+  }
+  const dir = path.join(sandbox, 'ton');
+  fs.mkdirSync(dir, { recursive: true });
+  for (const [key, [, spoken]] of Object.entries(TEXT)) {
+    const file = path.join(dir, `${key}.wav`);
+    const result = spawnSync(
+      path.join(PIPER, 'venv', 'Scripts', 'python.exe'),
+      ['-m', 'piper', '-m', path.join(PIPER, 'de.onnx'), '-f', file, '--length-scale', '1.05'],
+      { input: spoken, env: { ...process.env, PYTHONUTF8: '1' }, encoding: 'utf8' },
+    );
+    if (result.status !== 0) {
+      throw new Error(result.stderr);
+    }
+    // 16 Bit, Mono, 22 050 Hz; der Kopf einer WAV-Datei hat hier 44 Bytes.
+    const seconds = (fs.statSync(file).size - 44) / (2 * 22050);
+    speech.set(key, { file, seconds });
+  }
+  const total = [...speech.values()].reduce((sum, line) => sum + line.seconds, 0);
+  console.log(`Sprecher: ${speech.size} Sätze, ${total.toFixed(0)} s`);
+}
+
 function codeExecutable() {
   const base = path.join(root, '.vscode-test');
   const dir = fs.readdirSync(base).find((name) => name.startsWith('vscode-win32-x64-archive'));
@@ -242,7 +302,13 @@ function actions(page) {
     await page.keyboard.press('Enter');
     await sleep(250);
   };
-  return { caption, moveTo, clickAt, click, palette, openFile, goToLine };
+  /** Blendet den Untertitel ein, merkt sich den Einsatz des Sprechers und wartet, bis er fertig ist. */
+  const say = async (key, top = false) => {
+    const line = speech.get(key);
+    cues.push({ file: line.file, at: Date.now() / 1000 });
+    await caption(TEXT[key][0], line.seconds * 1000 + 450, top);
+  };
+  return { caption, say, moveTo, clickAt, click, palette, openFile, goToLine };
 }
 
 const RUN = '.editor-actions [aria-label^="Ausführen"], .editor-actions a[aria-label*="Ausführen"]';
@@ -257,20 +323,23 @@ function scenes(page, a) {
   };
   return {
     start: async () => {
-      await a.caption('HAW Kiel C: C-Programme in VS Code, ohne Einrichtung', 2800);
+      await a.say('titel');
       await a.openFile('hallo.c');
-      await a.caption('Eine .c-Datei öffnen. Oben rechts erscheinen die Knöpfe.', 2600);
+      await a.say('oeffnen');
+      await a.say('klick');
       await a.click(RUN);
-      await a.caption('Ausführen: Das Programm wird übersetzt und läuft im Terminal.', 3800);
+      await sleep(900);
+      await a.say('terminal');
     },
     fehler: async () => {
       await a.goToLine(7);
       await page.keyboard.press('End');
-      await a.caption('Ein Fehler im Code, hier fehlt das Semikolon …', 1500);
+      await a.say('fehler');
       await page.keyboard.press('Backspace');
       await sleep(800);
       await a.click(RUN);
-      await a.caption('… steht direkt im Code und im Problemfenster, mit deutschem Hinweis.', 4200);
+      await sleep(900);
+      await a.say('problem');
       await a.goToLine(7);
       await page.keyboard.press('End');
       await page.keyboard.type(';');
@@ -279,15 +348,16 @@ function scenes(page, a) {
     debuggen: async () => {
       await a.goToLine(7);
       await page.keyboard.press('F9');
-      await a.caption('Haltepunkt setzen, dann Debuggen mit F5.', 2200);
+      await a.say('haltepunkt');
       await page.keyboard.press('F5');
       await page.waitForSelector('.debug-toolbar', { timeout: 40000 }).catch(() => undefined);
-      await a.caption('Das Programm hält an der Zeile an.', 1800);
+      await sleep(800);
+      await a.say('haelt');
       await a.click('.debug-pane .monaco-list-row[aria-label*="Locals"]');
-      await a.caption('Links stehen die Variablen mit ihren Werten.', 3200);
+      await a.say('variablen');
       await page.keyboard.press('F5');
       await sleep(900);
-      await a.caption('Weiter mit F5: Die Werte ändern sich.', 3200);
+      await a.say('weiter');
       await page.keyboard.press('Shift+F5');
       await sleep(1200);
       await page.keyboard.press('Control+Shift+E');
@@ -299,38 +369,42 @@ function scenes(page, a) {
     projekt: async () => {
       await closeAll();
       await a.openFile('2_Projekt/main.c');
-      await a.caption('Mehrere .c-Dateien und eigene Header gehen ohne Makefile.', 2800);
+      await a.say('mehrere');
       await a.click(RUN);
-      await a.caption('Es läuft: main.c und rechnen.c werden gemeinsam übersetzt.', 2600);
+      await sleep(900);
+      await a.say('gemeinsam');
       await a.moveTo(90, 700);
-      await a.caption('Unten links steht, wie viele Dateien zum Programm gehören.', 2800);
+      await a.say('anzahl');
     },
     speicher: async () => {
       await closeAll();
       await a.openFile('feld.c');
-      await a.caption('Die Speicherprüfung läuft immer mit.', 2200);
+      await a.say('speicher');
       await a.click(RUN);
-      await a.caption('Am Ende meldet sie das Speicherleck mit der Zeile.', 4200);
+      await sleep(1200);
+      await a.say('leck');
     },
     aufgabe: async () => {
       await closeAll();
       await a.openFile('4_Aufgabe/main.c');
-      await a.caption('Aufgaben mit Selbsttest: Eine aufgabe.json enthält die Testfälle.', 2800);
+      await a.say('aufgabe');
       await a.click(CHECK);
-      await a.caption('Aufgabe prüfen zeigt, welche Tests bestehen …', 2600, true);
-      await a.caption('… und bei Fehlern Eingabe, Erwartung und tatsächliche Ausgabe.', 4600, true);
+      await sleep(1000);
+      await a.say('pruefen', true);
+      await a.say('abweichung', true);
     },
     schritte: async () => {
       await closeAll();
       await a.openFile('hallo.c');
-      await a.caption('Das Menü HAW Kiel C steht unten links.', 2000);
+      await a.say('menue');
       await a.click(STATUS);
       await sleep(700);
       await page.keyboard.type('Übersetzungsschritte', { delay: 30 });
-      await a.caption('Übersetzungsschritte zeigen, was gcc einzeln tut.', 1600);
+      await a.say('schritte');
       await page.keyboard.press('Enter');
-      await a.caption('Präprozessor, Compiler, Assembler und Linker, mit den Zwischendateien.', 4200);
-      await a.caption('Installation und Hilfe: github.com/thomasrinder-debug/haw-c', 3600);
+      await sleep(900);
+      await a.say('stufen');
+      await a.say('ende');
       await a.caption('', 300);
     },
   };
@@ -363,9 +437,26 @@ function encode(list) {
   fs.writeFileSync(concat, lines.join('\n'));
   const out = path.join(here, 'anleitung.mp4');
   const scale = `scale=${WIDTH}:-2:flags=lanczos,fps=25,format=yuv420p`;
+  // Jeder Satz kommt an seinen Einsatz, bezogen auf das erste Bild.
+  const start = list[0].time;
+  const rate = 22050;
+  const pcm = Buffer.alloc(Math.ceil((list.at(-1).time - start + 3) * rate) * 2);
+  for (const cue of cues) {
+    const sample = fs.readFileSync(cue.file).subarray(44);
+    const offset = Math.max(0, Math.round((cue.at - start) * rate)) * 2;
+    sample.copy(pcm, offset);
+  }
+  const voice = path.join(sandbox, 'ton.raw');
+  fs.writeFileSync(voice, pcm);
   const result = spawnSync(
     ffmpeg.path,
-    ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', concat, '-vf', scale, '-c:v', 'libx264', '-crf', '28', '-preset', 'slow', '-movflags', '+faststart', out],
+    [
+      '-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', concat,
+      '-f', 's16le', '-ar', String(rate), '-ac', '1', '-i', voice,
+      '-af', 'aformat=channel_layouts=mono,loudnorm=I=-16:TP=-1.5,aresample=44100,aformat=channel_layouts=stereo', '-vf', scale,
+      '-c:v', 'libx264', '-crf', '28', '-preset', 'slow',
+      '-c:a', 'aac', '-b:a', '96k', '-strict', 'experimental', '-shortest', '-movflags', '+faststart', out,
+    ],
     { encoding: 'utf8' },
   );
   if (result.status !== 0) {
@@ -385,6 +476,7 @@ function encode(list) {
 async function main() {
   prepareDemo();
   prepareProfile();
+  synthesize();
   const { child, browser, page } = await launch();
   try {
     const cdp = await setWindowSize(page);
