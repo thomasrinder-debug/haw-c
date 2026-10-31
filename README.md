@@ -6,6 +6,47 @@ Autor: Prof. Dr.-Ing. Thomas Rinder, HAW Kiel, thomas.rinder@haw-kiel.de
 
 Quelltext: https://github.com/thomasrinder-debug/haw-c
 
+## Installation
+
+Sie brauchen Windows 10 oder 11 (64 Bit), Internet für die Installation und rund 1 GB freien Speicherplatz. Administratorrechte sind nicht nötig. Auf verwalteten Rechnern siehe „Probleme“ unten.
+
+1. **VS Code installieren:** Unter https://code.visualstudio.com/download bei Windows den **User Installer** (x64) laden und ausführen. Ist VS Code schon installiert, entfällt dieser Schritt. Es muss das VS Code von Microsoft sein, mit VSCodium läuft der Debugger nicht.
+2. **Extension laden:** Unter https://github.com/thomasrinder-debug/haw-c/releases/latest die Datei `haw-c-win32-x64-….vsix` herunterladen.
+3. **Extension installieren:** In VS Code links die Ansicht **Erweiterungen** öffnen (Strg+Umschalt+X), oben im Bereich auf **…** klicken, **Aus VSIX installieren …** wählen (englisch: *Install from VSIX…*) und die Datei auswählen. Die benötigte Microsoft-Extension C/C++ kommt automatisch mit.
+4. **Fenster neu laden:** Strg+Umschalt+P drücken, **Developer: Reload Window** eingeben und bestätigen.
+5. **Testen:** Über **Datei → Ordner öffnen** einen Ordner wählen und darin eine Datei `hallo.c` anlegen:
+
+   ```c
+   #include <stdio.h>
+
+   int main(void)
+   {
+       printf("Hallo Welt\n");
+       return 0;
+   }
+   ```
+
+   Beim ersten Öffnen erscheint unten rechts „HAW Kiel C wird einmalig eingerichtet …“. Warten Sie, bis die Meldung verschwindet, das dauert meist unter einer Minute. Klicken Sie dann oben rechts auf **▶**. Im Terminal steht „Hallo Welt“ und darunter „Programm beendet.“
+
+Fertig. Ein eigener Compiler ist nicht nötig, ein schon installierter bleibt unberührt.
+
+### Probleme
+
+| Was passiert | Was zu tun ist |
+|---|---|
+| „Windows lässt … nicht starten“ oder „durch eine Richtlinie blockiert“ | Der Rechner ist verwaltet oder ein Virenscanner greift ein. Die IT muss Programme im Ordner `%APPDATA%\Code\User\globalStorage\thomasrinder.haw-c` und im Projektordner freigeben. |
+| Die Extension C/C++ lässt sich nicht installieren | Internet oder Proxy prüfen, dann in den Erweiterungen nach `ms-vscode.cpptools` suchen und sie von Hand installieren. |
+| Der Knopf ▶ fehlt | Ist eine `.c`-Datei geöffnet? Sonst das Fenster neu laden. |
+| Im Menü **Ausführen** erscheint eine Debugger-Auswahl | Abbrechen und einmal eine `.c`-Datei öffnen. Danach geht es auch über dieses Menü. |
+| Debuggen in einem Ordner mit Umlauten scheitert | Das Projekt in einen Ordner ohne Umlaute legen. |
+| Etwas anderes | Im Menü **HAW Kiel C** (Statusleiste unten links) erst „Umgebung neu aufsetzen“ versuchen, Ihre Quelltexte bleiben dabei erhalten. Hilft das nicht, „Diagnose kopieren“ wählen und den Text der Lehrkraft schicken. Er enthält Ihren Benutzernamen nicht. |
+
+### Aktualisieren und entfernen
+
+**Aktualisieren:** Neue VSIX-Datei laden und wie in Schritt 3 installieren, dann das Fenster neu laden. Bei einer Installation aus einer Datei kommen Updates nicht von selbst.
+
+**Entfernen:** In den Erweiterungen bei HAW Kiel C auf **Deinstallieren** klicken. Danach bleiben zwei Reste, die Sie von Hand löschen können: der Ordner `%APPDATA%\Code\User\globalStorage\thomasrinder.haw-c` (rund 600 MB) und in den Einstellungen unter `launch` der Eintrag „HAW Kiel C“. Die Microsoft-Extension C/C++ entfernen Sie getrennt, falls Sie sie nicht mehr brauchen.
+
 ## Bedienung
 
 1. Eine `.c`-Datei öffnen. Beim ersten Mal richtet sich die Umgebung von selbst ein.
